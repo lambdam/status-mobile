@@ -9,10 +9,10 @@ stdenv.mkDerivation {
   phases = [
     "unpackPhase"
     "patchGradlePhase"
-    "patchReactNativePhase"
+    "patchBuildIdPhase"
     "patchKeyChainPhase"
     "patchReactNativeCameraKitPhase"
-    "patchPodPhase"
+    "patchJestPhase"
     "installPhase"
   ];
 
@@ -49,33 +49,32 @@ stdenv.mkDerivation {
     done
   '';
 
+  # Do not add a BuildId to the generated libraries, for reproducibility
+  patchBuildIdPhase = ''
+    substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/CMakeLists.txt --replace \
+      '-Wl,--build-id' \
+      '-Wl,--build-id=none'
+  '';
+
+  # Remove when we upgrade jest to 29
+  patchJestPhase = ''
+    substituteInPlace ./node_modules/react-native/jest/setup.js --replace \
+      'jest.now()' \
+      'Date.now'
+  '';
+
   installPhase = ''
     mkdir -p $out
     cp -R node_modules $out/
-  '';
-
-  # Fix glog configuration issue in react-native:
-  # https://github.com/facebook/react-native/issues/33966
-  # TODO: remove this patch when we reach react-native 0.71.4
-  patchReactNativePhase = ''
-    substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
-      'sed -i' \
-      'sed -i.bak -e'
-    substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
-       'src/glog/logging.h.in' \
-       'src/glog/logging.h.in && rm src/glog/logging.h.in.bak'
-     substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
-        'src/config.h.in' \
-        'src/config.h.in && rm src/config.h.in.bak'
   '';
 
   # Remove gradle-test-logger-plugin:
   # https://github.com/oblador/react-native-keychain/issues/595
   # TODO: remove this patch when we this library fixes above issue
   patchKeyChainPhase = ''
-   sed -i -e '/classpath/d' \
-          -e '/apply plugin: "com\.adarshr\.test-logger"/d' \
-          ./node_modules/react-native-keychain/android/build.gradle
+    sed -i -e '/classpath/d' \
+      -e '/apply plugin: "com\.adarshr\.test-logger"/d' \
+      ./node_modules/react-native-keychain/android/build.gradle
   '';
 
   # Fix for :react-native-camera-kit:compileDebugKotlin FAILED
@@ -87,16 +86,6 @@ stdenv.mkDerivation {
     substituteInPlace ./node_modules/react-native-camera-kit/android/src/main/java/com/rncamerakit/CKCamera.kt --replace \
       'override fun onScale(detector: ScaleGestureDetector?)' \
       'override fun onScale(detector: ScaleGestureDetector)'
-  '';
-
-
-  # Fix pod issue in react-native 0.67.5:
-  # https://stackoverflow.com/questions/71248072/no-member-named-cancelbuttontintcolor-in-jsnativeactionsheetmanagerspecsh
-  # TODO: remove this patch when maybe after 0.68.5
-  patchPodPhase = ''
-    substituteInPlace ./node_modules/react-native/React/CoreModules/RCTActionSheetManager.mm --replace \
-          '[RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];' \
-          '[RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try

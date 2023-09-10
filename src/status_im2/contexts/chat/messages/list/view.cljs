@@ -168,12 +168,6 @@
   [props]
   [:f> f-list-footer-avatar props])
 
-;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
-(defn- add-inverted-y-android
-  [style]
-  (cond-> style
-    platform/android?
-    (assoc :scale-y -1)))
 
 (defn actions
   [chat-id cover-bg-color]
@@ -213,7 +207,7 @@
                                                      [30 125]
                                                      [14 0]
                                                      header-extrapolation-option)]
-    [rn/view (add-inverted-y-android {:flex 1})
+    [rn/view {:flex 1}
      [rn/view
       {:style     (style/header-container all-loaded? theme)
        :on-layout on-layout}
@@ -262,8 +256,7 @@
    {:keys [context keyboard-shown?]}]
   (when (not= content-type constants/content-type-contact-request)
     [rn/view
-     (add-inverted-y-android
-      {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
+     {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)}
      (cond
        (= type :datemark)
        [quo/divider-date value]
@@ -365,13 +358,14 @@
                                                                  colors/white
                                                                  colors/neutral-95
                                                                  theme))})
+
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
-       :inverted                          (when platform/ios? true)
-       :on-layout                         (fn [e]
-                                            (let [layout-height (oops/oget e
-                                                                           "nativeEvent.layout.height")]
-                                              (reset! messages-view-height layout-height)))
-       :scroll-enabled                    (not recording?)
+       :inverted (when platform/ios? true)
+       :on-layout (fn [e]
+                    (let [layout-height (oops/oget e
+                                                   "nativeEvent.layout.height")]
+                      (reset! messages-view-height layout-height)))
+       :scroll-enabled (not recording?)
        :content-inset-adjustment-behavior :never}]]))
 
 (defn message-list-content-view
