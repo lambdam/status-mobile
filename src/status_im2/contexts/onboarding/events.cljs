@@ -3,9 +3,11 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im2.common.biometric.events :as biometric]
+    [status-im2.common.keychain.events :as keychain]
     [status-im2.constants :as constants]
     [status-im2.contexts.profile.create.events :as profile.create]
     [status-im2.contexts.profile.recover.events :as profile.recover]
+    [status-im2.navigation.state :as state]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -35,11 +37,20 @@
   {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
                             :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
 
+(rf/defn navigate-to-enable-notifications
+  {:events [:onboarding-2/navigate-to-enable-notifications]}
+  [{:keys [db]}]
+  (let [key-uid (get-in db [:profile/profile :key-uid])]
+    (keychain/save-auth-method! key-uid constants/auth-method-biometric)
+    {:dispatch [:navigate-to-within-stack [:enable-notifications :enable-biometrics]]}))
+
 (rf/defn biometrics-done
   {:events [:onboarding-2/biometrics-done]}
   [{:keys [db]}]
   {:db       (assoc-in db [:onboarding-2/profile :auth-method] constants/auth-method-biometric)
-   :dispatch [:onboarding-2/create-account-and-login]})
+   :dispatch (if (= :syncing-results @state/root-id)
+               [:onboarding-2/navigate-to-enable-notifications]
+               [:onboarding-2/create-account-and-login])})
 
 (rf/defn biometrics-fail
   {:events [:onboarding-2/biometrics-fail]}
@@ -82,6 +93,14 @@
      :dispatch (if supported-type
                  [:navigate-to-within-stack [:enable-biometrics :new-to-status]]
                  [:onboarding-2/create-account-and-login])}))
+
+(rf/defn navigate-to-enable-biometrics
+  {:events [:onboarding-2/navigate-to-enable-biometrics]}
+  [{:keys [db]}]
+  (let [supported-type (:biometric/supported-type db)]
+    {:dispatch (if supported-type
+                 [:open-modal :enable-biometrics]
+                 [:open-modal :enable-notifications])}))
 
 (rf/defn seed-phrase-entered
   {:events [:onboarding-2/seed-phrase-entered]}

@@ -8,6 +8,7 @@
     [status-im2.common.parallax.whitelist :as whitelist]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.onboarding.enable-biometrics.style :as style]
+    [status-im2.navigation.state :as state]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -24,7 +25,8 @@
   [insets]
   (let [supported-biometric-type (rf/sub [:biometric/supported-type])
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
-        profile-color            (:color (rf/sub [:onboarding-2/profile]))]
+        profile-color            (or (:color (rf/sub [:onboarding-2/profile]))
+                                     (rf/sub [:profile/customization-color]))]
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:accessibility-label :enable-biometrics-button
@@ -36,7 +38,10 @@
       {:accessibility-label :maybe-later-button
        :background          :blur
        :type                :grey
-       :on-press            #(rf/dispatch [:onboarding-2/create-account-and-login])
+       :on-press            #(rf/dispatch (if (= :syncing-results @state/root-id)
+                                            [:navigate-to-within-stack
+                                             [:enable-notifications :enable-biometrics]]
+                                            [:onboarding-2/create-account-and-login]))
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
