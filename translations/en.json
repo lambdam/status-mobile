@@ -2384,5 +2384,6 @@
     "address-activity": "This address has activity",
     "keypairs": "Keypairs",
     "keypairs-description": "Select keypair to derive your new account from",
-    "confirm-account-origin": "Confirm account origin"
+    "confirm-account-origin": "Confirm account origin",
+    "select-asset": "Select asset"
 }
