@@ -32,6 +32,7 @@
     [status-im2.contexts.shell.activity-center.view :as activity-center]
     [status-im2.contexts.shell.jump-to.view :as shell]
     [status-im2.contexts.shell.share.view :as share]
+    [status-im2.contexts.status-im-preview.main :as status-im-preview]
     [status-im2.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
@@ -44,7 +45,7 @@
     [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
-    [status-im2.contexts.wallet.saved-address.view :as wallet-saved-address]
+    [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
     [status-im2.contexts.wallet.select-address-to-watch.view :as wallet-address-watch]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
@@ -274,8 +275,8 @@
      :options   {:insets {:top? true}}
      :component wallet-create-account/view}
 
-    {:name      :wallet-saved-address
-     :component wallet-saved-address/view}
+    {:name      :wallet-saved-addresses
+     :component wallet-saved-addresses/view}
 
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}
@@ -296,4 +297,11 @@
      quo.preview/screens)
 
    (when config/quo-preview-enabled?
-     quo.preview/main-screens)))
+     quo.preview/main-screens)
+
+   (when config/quo-preview-enabled?
+     status-im-preview/screens)
+
+   (when config/quo-preview-enabled?
+     status-im-preview/main-screens)))
+
