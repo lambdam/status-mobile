@@ -512,8 +512,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if pn_to_disappear:
             if not pn_to_disappear.is_element_disappeared(90):
                 self.errors.append("Push notification was not removed after initial message deletion")
-        self.device_1.navigate_back_to_home_view()
-        self.device_2.navigate_back_to_home_view()
         self.errors.verify_no_errors()
 
 
