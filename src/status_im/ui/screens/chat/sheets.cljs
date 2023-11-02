@@ -34,10 +34,10 @@
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
      [list.item/list-item
       {:theme               :negative
-       :title               (i18n/label :t/delete-chat)
-       :accessibility-label :delete-chat-button
+       :title               (i18n/label :t/close-chat)
+       :accessibility-label :close-chat-button
        :icon                :main-icons/delete
-       :on-press            #(re-frame/dispatch [:chat.ui/show-remove-confirmation chat-id])}]]))
+       :on-press            #(re-frame/dispatch [:chat.ui/show-close-confirmation chat-id])}]]))
 
 (defn community-chat-accents
   []
@@ -108,6 +108,7 @@
              :on-press            #(hide-sheet-and-dispatch [:group-chats.ui/remove-chat-confirmed
                                                              chat-id])}])]))))
 
+;; Still in use? Not referenced anywhere
 (defn actions
   [{:keys [chat-type chat-id]
     :as   current-chat}]
