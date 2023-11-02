@@ -320,6 +320,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.chats_tab.click()
 
         self.device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
+        app_package = self.device_2.driver.current_package
         self.device_2.put_app_to_background()
         self.device_2.open_notification_bar()
         if not self.chat_1.chat_message_input.is_element_displayed():
@@ -333,7 +334,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.device_2.just_fyi("Check text push notification and tap it")
         if not self.home_2.get_pn(message):
             self.device_2.click_system_back_button()
-            self.device_2.status_in_background_button.click()
+            self.device_2.driver.activate_app(app_package)
             self.device_2.driver.fail("Push notification with text was not received")
         chat_2 = self.device_2.click_upon_push_notification_by_text(message)
 
@@ -347,7 +348,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.device_1.just_fyi("Device 1 checks PN with emoji")
         if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(60):
             self.device_1.click_system_back_button()
-            self.device_1.status_in_background_button.click()
+            self.device_1.driver.activate_app(app_package)
             self.device_1.driver.fail("Push notification with emoji was not received")
         chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
 
@@ -365,7 +366,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702855)
     def test_1_1_chat_edit_message(self):
-        [home.navigate_back_to_home_view() for home in self.homes]
+        self.home_1.navigate_back_to_home_view()
+        self.home_2.navigate_back_to_home_view()
         self.chat_2.jump_to_card_by_text(self.username_1)
         self.chat_1.jump_to_card_by_text(self.username_2)
 
@@ -456,6 +458,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.chat_2.jump_to_card_by_text(self.username_1)
         if not self.chat_1.chat_message_input.is_element_displayed():
             self.chat_1.jump_to_card_by_text(self.username_2)
+        app_package = self.chat_1.driver.current_package
 
         self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
         message_after_edit_1_1 = 'smth I should edit'
@@ -502,14 +505,15 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.chat_element_by_text(message_to_delete).wait_for_sent_state()
         if not self.home_1.get_pn(message_to_delete):
             self.home_1.click_system_back_button()
-            self.home_1.status_in_background_button.click()
+            self.home_1.driver.activate_app(app_package)
             self.errors.append("Push notification doesn't appear")
         self.chat_2.delete_message_in_chat(message_to_delete)
         pn_to_disappear = self.home_1.get_pn(message_to_delete)
         if pn_to_disappear:
             if not pn_to_disappear.is_element_disappeared(90):
                 self.errors.append("Push notification was not removed after initial message deletion")
-        [device.navigate_back_to_home_view() for device in (self.device_1, self.device_2)]
+        self.device_1.navigate_back_to_home_view()
+        self.device_2.navigate_back_to_home_view()
         self.errors.verify_no_errors()
 
 

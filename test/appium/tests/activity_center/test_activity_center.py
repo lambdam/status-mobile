@@ -27,6 +27,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
     @marks.testrail_id(702850)
     def test_activity_center_contact_request_decline(self):
+        app_package = self.device_1.driver.current_package
         self.device_1.put_app_to_background()
         self.device_2.just_fyi('Device2 sends a contact request to Device1 via Paste button and check user details')
         self.home_2.driver.set_clipboard_text(self.public_key_1)
@@ -52,7 +53,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.device_1.open_notification_bar()
         if self.home_1.element_by_text_part("Please add me to your contacts").is_element_displayed():
             self.errors.append("Push notification with text was received for new message in activity centre")
-        self.device_1.click_system_back_button(2)
+        self.device_1.click_system_back_button()
+        self.device_1.driver.activate_app(app_package)
 
         self.device_1.just_fyi('Device1 verifies pending contact request')
         self.home_1.contacts_tab.click()
