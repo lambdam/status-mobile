@@ -49,6 +49,7 @@
     quo.components.drawers.permission-context.view
     quo.components.dropdowns.dropdown.view
     quo.components.dropdowns.network-dropdown.view
+    quo.components.dropdowns.dropdown-input.view
     quo.components.empty-state.empty-state.view
     quo.components.gradient.gradient-cover.view
     [quo.components.graph.interactive-graph.view :as interactive-graph]
@@ -230,6 +231,7 @@
 ;;;; Dropdowns
 (def dropdown quo.components.dropdowns.dropdown.view/view)
 (def network-dropdown quo.components.dropdowns.network-dropdown.view/view)
+(def dropdown-input quo.components.dropdowns.dropdown-input.view/view)
 
 ;;;; Empty State
 (def empty-state quo.components.empty-state.empty-state.view/empty-state)
