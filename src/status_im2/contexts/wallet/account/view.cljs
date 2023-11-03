@@ -1,5 +1,6 @@
 (ns status-im2.contexts.wallet.account.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -33,9 +34,21 @@
   []
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
+<<<<<<< HEAD
       (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
             networks                           (rf/sub [:wallet/network-details])]
+=======
+      (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
+            tokens (rf/sub [:wallet/tokens])
+            account         (rf/sub [:wallet/account account-address])
+            networks        (rf/sub [:wallet/network-details])]
+<<<<<<< HEAD
+>>>>>>> 74f8b4535 (updates)
         [rn/view {:style {:flex 1}}
+=======
+        (println "tokens" (get tokens (keyword (string/lower-case account-address))))
+        [rn/view {:style style/container}
+>>>>>>> 408212e7c (updates)
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
