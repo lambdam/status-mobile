@@ -496,6 +496,7 @@ com.facebook.fresco:nativeimagetranscoder:2.5.0
 com.facebook.fresco:soloader:2.5.0
 com.facebook.fresco:ui-common:2.5.0
 com.facebook.infer.annotation:infer-annotation:0.18.0
+com.facebook.react:hermes-android:0.72.5
 com.facebook.react:react-android:0.72.5
 com.facebook.soloader:annotation:0.10.5
 com.facebook.soloader:nativeloader:0.10.5

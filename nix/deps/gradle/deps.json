@@ -9632,6 +9632,37 @@
   },
 
   {
+    "path": "com/facebook/react/hermes-android/0.72.5",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "hermes-android-0.72.5.pom": {
+        "sha1": "c7776f4ea7fb0b1154f4937decd1764aabaf5d62",
+        "sha256": "sha256-ulsZvmX9JypKM1a6cuGMCv/xetRFScnKyzHKgomBaBc="
+      },
+      "hermes-android-0.72.5-debug.aar": {
+        "sha1": "a2ed6d8948f76cd27dc12250fd52afba6a1b19f3",
+        "sha256": "sha256-tZE8G/kcgglutI4VdV57G3yAvCjWZ2qWNllmfSEy9JI="
+      },
+      "hermes-android-0.72.5-debug.aar.asc": {
+        "sha1": "f05a8008789c4a0e3458a52a975521fa8bb7252e",
+        "sha256": "sha256-72pbNrCv8l3lFBbnQ2KO1DpzGf4dNxi+BaIkyh5ZAR8="
+      },
+      "hermes-android-0.72.5-release.aar": {
+        "sha1": "a1b6103ad7b0f9028d200b4f8bcb4f48e28eb83d",
+        "sha256": "sha256-jSBXb/19Ia0AlGemFJrzfFOv73eTvE1ot16Anbapb6o="
+      },
+      "hermes-android-0.72.5-release.aar.asc": {
+        "sha1": "0de2caf30a275354d290c99b04e3527d1eca1100",
+        "sha256": "sha256-l1ouT+Ssy/f6frdMhcYrj3orG/6IMS3ASOHjkgnKj8c="
+      },
+      "hermes-android-0.72.5.module": {
+        "sha1": "1186b1980bc6e25627f5c83e1d50c6b3948daa14",
+        "sha256": "sha256-TInI30yGfbymMm3AraikoeER+dvOc/AeZIr7zFUYnSQ="
+      }
+    }
+  },
+
+  {
     "path": "com/facebook/react/react-android/0.72.5",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
