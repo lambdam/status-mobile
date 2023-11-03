@@ -309,7 +309,7 @@ PODS:
     - React-Core
   - react-native-blur (4.3.3):
     - React-Core
-  - react-native-cameraroll (5.7.2):
+  - react-native-cameraroll (5.10.0):
     - React-Core
   - react-native-config (1.5.0):
     - react-native-config/App (= 1.5.0)
@@ -823,7 +823,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   FBReactNativeSpec: 448e08a759d29a96e15725ae532445bf4343567c
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  glog: c5b451128f1a485ffb9be9df3f544b001bd1fde0
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
@@ -847,7 +847,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blob-util: 600972b1782380a5a7d5db61a3817ea32349dae9
   react-native-blur: c6d0a1dc2b4b519f7afe3b14d8151998632b6d18
-  react-native-cameraroll: 134805127580aed23403b8c2cb1548920dd77b3a
+  react-native-cameraroll: 4701ae7c3dbcd3f5e9e150ca17f250a276154b35
   react-native-config: 5330c8258265c1e5fdb8c009d2cabd6badd96727
   react-native-hole-view: dc2724033ed88b9245e9a7ea287f09d36d01fafc
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
