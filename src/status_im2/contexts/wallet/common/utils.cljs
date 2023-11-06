@@ -23,12 +23,17 @@
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
 
+<<<<<<< HEAD
 (defn- calculate-raw-balance
+=======
+(defn calculate-raw-balance
+>>>>>>> c8bb0a581 (updates)
   [raw-balance decimals]
   (if-let [n (utils.number/parse-int raw-balance nil)]
     (/ n (Math/pow 10 (utils.number/parse-int decimals)))
     0))
 
+<<<<<<< HEAD
 (defn- total-token-value-in-all-chains
   [{:keys [balances-per-chain decimals]}]
   (->> balances-per-chain
@@ -43,3 +48,13 @@
               (* (total-token-value-in-all-chains token)
                  (-> token :market-values-per-currency :usd :price))))
        (reduce +)))
+=======
+(defn total-per-token
+  [item]
+  (reduce (fn [ac balances]
+            (+ (calculate-raw-balance (:rawBalance balances)
+                                      (:decimals item))
+               ac))
+          0
+          (vals (:balancesPerChain item))))
+>>>>>>> c8bb0a581 (updates)
