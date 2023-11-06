@@ -37,32 +37,6 @@
    :percentage-change "0.00%"
    :networks          networks})
 
-(def tokens
-  [{:token               :snt
-    :state               :default
-    :status              :empty
-    :customization-color :blue
-    :values              {:crypto-value      "0.00"
-                          :fiat-value        "€0.00"
-                          :percentage-change "0.00"
-                          :fiat-change       "€0.00"}}
-   {:token               :eth
-    :state               :default
-    :status              :empty
-    :customization-color :blue
-    :values              {:crypto-value      "0.00"
-                          :fiat-value        "€0.00"
-                          :percentage-change "0.00"
-                          :fiat-change       "€0.00"}}
-   {:token               :dai
-    :state               :default
-    :status              :empty
-    :customization-color :blue
-    :values              {:crypto-value      "0.00"
-                          :fiat-value        "€0.00"
-                          :percentage-change "0.00"
-                          :fiat-change       "€0.00"}}])
-
 (def collectibles
   [{:image (status.resources/get-mock-image :collectible1)
     :id    1}
