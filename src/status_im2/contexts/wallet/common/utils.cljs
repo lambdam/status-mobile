@@ -34,6 +34,7 @@
     0))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (defn- total-token-value-in-all-chains
   [{:keys [balances-per-chain decimals]}]
   (->> balances-per-chain
@@ -50,11 +51,14 @@
        (reduce +)))
 =======
 (defn total-per-token
+=======
+(defn sum-token-chains
+>>>>>>> 25ec47428 (review)
   [item]
-  (reduce (fn [ac balances]
+  (reduce (fn [acc balances]
             (+ (calculate-raw-balance (:rawBalance balances)
                                       (:decimals item))
-               ac))
+               acc))
           0
           (vals (:balancesPerChain item))))
 >>>>>>> c8bb0a581 (updates)
