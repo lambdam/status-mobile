@@ -23,7 +23,9 @@
     [status-im2.contexts.chat.composer.style :as style]
     [status-im2.contexts.chat.composer.sub-view :as sub-view]
     [status-im2.contexts.chat.composer.utils :as utils]
-    [utils.i18n :as i18n]))
+    [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as contact-requests.bottom-drawer]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn sheet-component
   [{:keys [insets
@@ -34,8 +36,7 @@
            opacity
            background-y
            theme]} props state]
-  (let [{:keys [chat-screen-loaded?]
-         :as   subscriptions}    (utils/init-subs)
+  (let [subscriptions            (utils/init-subs)
         content-height           (reagent/atom (or (:input-content-height ; Actual text height
                                                     subscriptions)
                                                    constants/input-height))
@@ -80,12 +81,11 @@
     (effects/link-previews props state animations subscriptions)
     (effects/use-images props state animations subscriptions)
     [:<>
-     (when chat-screen-loaded?
-       [mentions/view props state animations max-height cursor-pos
-        (:images subscriptions)
-        (:link-previews? subscriptions)
-        (:reply subscriptions)
-        (:edit subscriptions)])
+     [mentions/view props state animations max-height cursor-pos
+      (:images subscriptions)
+      (:link-previews? subscriptions)
+      (:reply subscriptions)
+      (:edit subscriptions)]
      [rn/view
       {:style style/composer-sheet-and-jump-to-container}
       [sub-view/shell-button state scroll-to-bottom-fn show-floating-scroll-down-button?]
@@ -96,10 +96,9 @@
         {:style     (style/sheet-container insets state animations theme)
          :on-layout #(handler/layout % state blur-height)}
         [sub-view/bar]
-        (when chat-screen-loaded?
-          [:<>
-           [reply/view state]
-           [edit/view state]])
+        [:<>
+         [reply/view state]
+         [edit/view state]]
         [reanimated/touchable-opacity
          {:active-opacity      1
           :on-press            (fn []
@@ -138,15 +137,14 @@
                                       :theme      theme})
             :max-length constants/max-text-size
             :accessibility-label :chat-message-input}]]]
-        (when chat-screen-loaded?
-          [:<>
-           [gradients/view props state animations show-bottom-gradient?]
-           [link-preview/view]
-           [images/images-list]])
+        [:<>
+         [gradients/view props state animations show-bottom-gradient?]
+         [link-preview/view]
+         [images/images-list]]
         [:f> actions/view props state animations window-height insets scroll-to-bottom-fn
          subscriptions]]]]]))
 
-(defn composer
+(defn f-composer
   [{:keys [insets scroll-to-bottom-fn show-floating-scroll-down-button?]}]
   (let [window-height (:height (rn/get-window))
         theme         (quo.theme/use-theme-value)
@@ -172,3 +170,26 @@
        :focused?      (:focused? state)
        :theme         theme}]
      [:f> sheet-component extra-params props state]]))
+
+(defn composer-placeholder []
+  [rn/view {:style {:width 100 :height 100 :background-color :red}}])
+
+(defn composer
+  [{:keys [insets scroll-to-bottom-fn show-floating-scroll-down-button?]}]
+  (if (rf/sub [:shell/chat-screen-loaded?])
+    (let [chat-screen-loaded? (rf/sub [:shell/chat-screen-loaded?])
+          {:keys [chat-id
+                  contact-request-state
+                  group-chat
+                  able-to-send-message?
+                  chat-type]
+           :as   chat}        (rf/sub [:chats/current-chat-chat-view])]
+      (when (seq chat)
+        (if able-to-send-message?
+          [:f> f-composer
+           {:insets                            insets
+            :scroll-to-bottom-fn               scroll-to-bottom-fn
+            :show-floating-scroll-down-button? show-floating-scroll-down-button?}]
+          [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat])))
+    [composer-placeholder]))
+

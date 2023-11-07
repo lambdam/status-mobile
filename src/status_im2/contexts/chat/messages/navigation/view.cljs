@@ -10,6 +10,7 @@
     [react-native.reanimated :as reanimated]
     [status-im2.common.home.actions.view :as actions]
     [status-im2.config :as config]
+    [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.list.view :refer [topbar-invisible-scroll-y-value]]
     [status-im2.contexts.chat.messages.navigation.style :as style]
     [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
@@ -23,10 +24,34 @@
 (defonce ^:const minimum-scroll-y-topbar-overlaying-avatar-composer-active 85)
 
 (defn f-view
-  [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
-           back-icon animate-topbar-name? composer-active? big-name-visible? animate-topbar-opacity?
-           on-end-reached?]}]
-  (let [{:keys [group-chat chat-id]}              chat
+  [{:keys [theme scroll-y inner-state-atoms]}]
+  (let [{:keys [chat-id
+                contact-request-state
+                group-chat
+                able-to-send-message?
+                chat-type
+                chat-name
+                emoji]
+         :as   chat}                              (rf/sub [:chats/current-chat-chat-view])
+        {:keys [animate-topbar-name? big-name-visible?
+                animate-topbar-opacity?
+                on-end-reached?]}                 inner-state-atoms
+        content-height                            (reanimated/use-shared-value 0)
+        all-loaded?                               (rf/sub [:chats/all-loaded? (:chat-id chat)])
+        {composer-active? :focused?}              (rf/sub [:chats/current-chat-input])
+        display-name                              (cond
+                                                    (= chat-type constants/one-to-one-chat-type)
+                                                    (first (rf/sub
+                                                            [:contacts/contact-two-names-by-identity
+                                                             chat-id]))
+                                                    (= chat-type constants/community-chat-type)
+                                                    (str (when emoji (str emoji " ")) "# " chat-name)
+                                                    :else (str emoji chat-name))
+        online?                                   (rf/sub [:visibility-status-updates/online? chat-id])
+        photo-path                                (rf/sub [:chats/photo-path chat-id])
+        back-icon                                 (if (= chat-type constants/one-to-one-chat-type)
+                                                    :i/close
+                                                    :i/arrow-left)
         opacity-animation                         (reanimated/use-shared-value 0)
         banner-opacity-animation                  (reanimated/interpolate
                                                    scroll-y
@@ -97,7 +122,7 @@
            (reanimated/animate translate-animation title-opacity-interpolation-start))))
      [@animate-topbar-name? @big-name-visible? @animate-topbar-opacity? composer-active?
       @on-end-reached?])
-    [rn/view {:style (style/navigation-view chat-screen-loaded?)}
+    [rn/view {:style style/navigation-view}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
 
@@ -109,6 +134,7 @@
         :blur-radius   (if platform/ios? 20 10)
         :style         {:flex 1}}]]
 
+     ;; Extract header view content in different function and use in placeholder
      [rn/view {:style style/header-container}
       [quo/button
        {:icon-only?          true
@@ -165,8 +191,14 @@
        :all-loaded?       all-loaded?
        :top-offset        style/navigation-bar-height}]]))
 
+(defn navigation-placeholder []
+  [rn/view {:style {:width 100 :height 100 :background-color :red :position :absolute :top 0}}])
+
 (defn- internal-navigation-view
   [params]
-  [:f> f-view params])
+  (let [chat-screen-loaded? (rf/sub [:shell/chat-screen-loaded?])]
+    (if chat-screen-loaded?
+      [:f> f-view params]
+      [navigation-placeholder])))
 
 (def navigation-view (quo.theme/with-theme internal-navigation-view))

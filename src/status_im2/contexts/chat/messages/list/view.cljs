@@ -297,25 +297,30 @@
     (reanimated/set-shared-value scroll-y scroll-distance)))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
-           big-name-visible? animate-topbar-opacity? composer-active?
-           on-end-reached? animate-topbar-name?]}]
-  (rn/use-effect (fn []
-                   (if (and (not @on-end-reached?)
-                            (< topbar-visible-scroll-y-value (reanimated/get-shared-value scroll-y)))
-                     (reset! animate-topbar-opacity? true)
-                     (reset! animate-topbar-opacity? false)))
-                 [composer-active? @on-end-reached? @animate-topbar-opacity?])
-  (let [theme                                 (quo.theme/use-theme-value)
-        {window-height :height}               (rn/get-window)
-        {:keys [keyboard-height]}             (hooks/use-keyboard)
-        context                               (rf/sub [:chats/current-chat-message-list-view-context])
-        messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
-        recording?                            (rf/sub [:chats/recording?])
-        all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
+  [{:keys [insets scroll-y content-height cover-bg-color inner-state-atoms composer-active?]}]
+  (let [theme                          (quo.theme/use-theme-value)
+        chat                           (rf/sub [:chats/current-chat-chat-view])
+        {composer-active? :focused?}   (rf/sub [:chats/current-chat-input])
+        {:keys [keyboard-shown]}       (hooks/use-keyboard)
+        {window-height :height}        (rn/get-window)
+        {:keys [keyboard-height]}      (hooks/use-keyboard)
+        context                        (rf/sub [:chats/current-chat-message-list-view-context])
+        messages                       (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        recording?                     (rf/sub [:chats/recording?])
+        all-loaded?                    (rf/sub [:chats/all-loaded? (:chat-id chat)])
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
-                messages-view-header-height]} inner-state-atoms]
+                messages-view-header-height
+                big-name-visible?
+                animate-topbar-opacity?
+                on-end-reached?
+                animate-topbar-name?]} inner-state-atoms]
+    (rn/use-effect (fn []
+                     (if (and (not @on-end-reached?)
+                              (< topbar-visible-scroll-y-value (reanimated/get-shared-value scroll-y)))
+                       (reset! animate-topbar-opacity? true)
+                       (reset! animate-topbar-opacity? false)))
+                   [composer-active? @on-end-reached? @animate-topbar-opacity?])
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
       {:root-margin                       root-margin-for-big-name-visibility-detector
@@ -340,7 +345,7 @@
        :data                              messages
        :render-data                       {:theme           theme
                                            :context         context
-                                           :keyboard-shown? keyboard-shown?
+                                           :keyboard-shown? keyboard-shown
                                            :insets          insets}
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
@@ -372,7 +377,7 @@
                                                 (reanimated/set-shared-value scroll-y
                                                                              (- y
                                                                                 window-height
-                                                                                (- (when keyboard-shown?
+                                                                                (- (when keyboard-shown
                                                                                      keyboard-height))))
                                                 (reanimated/set-shared-value content-height y))))
        :on-end-reached                    #(list-on-end-reached scroll-y on-end-reached?)
