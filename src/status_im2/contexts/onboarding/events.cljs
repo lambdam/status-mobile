@@ -3,7 +3,6 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im2.common.biometric.events :as biometric]
-    [status-im2.common.keychain.events :as keychain]
     [status-im2.constants :as constants]
     [status-im2.contexts.profile.create.events :as profile.create]
     [status-im2.contexts.profile.recover.events :as profile.recover]
@@ -37,11 +36,17 @@
   {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
                             :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
 
+(rf/defn enable-biometrics-auth
+  {:events [:onboarding-2/enable-biometrics-auth]}
+  [{:keys [db]} password]
+  {:db                     (assoc-in db [:onboarding-2/profile :password] password)
+   :biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
+                            :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
+
 (rf/defn navigate-to-enable-notifications
   {:events [:onboarding-2/navigate-to-enable-notifications]}
   [{:keys [db]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    (keychain/save-auth-method! key-uid constants/auth-method-biometric)
     {:dispatch [:navigate-to-within-stack [:enable-notifications :enable-biometrics]]}))
 
 (rf/defn biometrics-done
@@ -49,7 +54,7 @@
   [{:keys [db]}]
   {:db       (assoc-in db [:onboarding-2/profile :auth-method] constants/auth-method-biometric)
    :dispatch (if (= :syncing-results @state/root-id)
-               [:onboarding-2/navigate-to-enable-notifications]
+               [:onboarding-2/finalize-setup]
                [:onboarding-2/create-account-and-login])})
 
 (rf/defn biometrics-fail
@@ -141,12 +146,14 @@
         key-uid            (get-in db [:profile/profile :key-uid])
         biometric-enabled? (= (get-in db [:onboarding-2/profile :auth-method])
                               constants/auth-method-biometric)]
+    (js/console.log (str "masked password" masked-password))
     (cond-> {:db (assoc db :onboarding-2/generated-keys? true)}
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
              {:key-uid         key-uid
               :masked-password masked-password
-              :on-success      #(log/debug "successfully saved biometric")
+              :on-success      #(rf/dispatch [:navigate-to-within-stack
+                                              [:enable-notifications :enable-biometrics]])
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))

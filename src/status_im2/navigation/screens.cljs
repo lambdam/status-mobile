@@ -167,7 +167,7 @@
                                                 transitions/push-animations-for-transparent-background)
                  :popGesture             false
                  :modalPresentationStyle :overCurrentContext}
-     :component enable-biometrics/enable-biometrics}
+     :component enable-biometrics/view}
 
     {:name      :generating-keys
      :options   {:theme              :dark
