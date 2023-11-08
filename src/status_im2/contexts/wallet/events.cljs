@@ -27,6 +27,7 @@
               :icon-color colors/success-50
               :text       (i18n/label :t/account-created {:name name})}]]]})))
 
+<<<<<<< HEAD
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
    (let [new-account? (get-in db [:wallet :new-account?])]
@@ -102,6 +103,7 @@
                                       :event  :wallet/get-wallet-token
                                       :params addresses})}]]]})))
 
+<<<<<<< HEAD
 (defn- fix-chain-id-keys
   [token]
   (update token :balances-per-chain update-keys (comp utils.number/parse-int name)))
@@ -123,6 +125,21 @@
      {:db (-> db
               (update-in [:wallet :accounts] add-tokens tokens)
               (assoc-in [:wallet :ui :tokens-loading?] false))})))
+=======
+(rf/reg-event-fx :wallet/get-wallet-token-success
+ (fn [{:keys [db]} [tokens]]
+   {:db (assoc db
+               :wallet/tokens          tokens
+               :wallet/tokens-loading? false)}))
+=======
+(rf/defn get-wallet-token-success
+  {:events [:wallet/get-wallet-token-success]}
+  [{:keys [db]} data]
+  {:db (assoc db
+              :wallet/tokens          (cske/transform-keys csk/->kebab-case-keyword data)
+              :wallet/tokens-loading? false)})
+>>>>>>> 5ec5c0e69 (review)
+>>>>>>> af0d365b4 (review)
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}

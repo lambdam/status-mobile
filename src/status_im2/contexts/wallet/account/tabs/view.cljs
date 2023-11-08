@@ -12,11 +12,11 @@
 
 (defn view
   [{:keys [selected-tab account-address]}]
-  (let [parsed-tokens (rf/sub [:wallet/parsed-tokens account-address])]
+  (let [tokens (rf/sub [:wallet/token-values account-address])]
     (case selected-tab
       :assets       [rn/flat-list
                      {:render-fn               token-value/view
-                      :data                    parsed-tokens
+                      :data                    tokens
                       :content-container-style {:padding-horizontal 8}}]
       :collectibles [collectibles/view]
       :activity     [activity/view]
