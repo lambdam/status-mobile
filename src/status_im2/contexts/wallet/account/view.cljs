@@ -33,22 +33,8 @@
   []
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-<<<<<<< HEAD
       (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
             networks                           (rf/sub [:wallet/network-details])]
-=======
-      (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
-            account         (rf/sub [:wallet/account account-address])
-            networks        (rf/sub [:wallet/network-details])]
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 74f8b4535 (updates)
-=======
-<<<<<<< HEAD
->>>>>>> 347a673ba (updates)
-=======
->>>>>>> 22cc56b49 (lint)
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type              :wallet-networks
@@ -93,6 +79,7 @@
            :on-change      #(reset! selected-tab %)
            :scrollable?    true}]
 <<<<<<< HEAD
+<<<<<<< HEAD
          [tabs/view {:selected-tab @selected-tab
                      :account-address account-address
                      :account account}]]))))
@@ -107,3 +94,6 @@
 =======
            :account-address account-address}]]))))
 >>>>>>> 49ea0601d (lint)
+=======
+         [tabs/view {:selected-tab @selected-tab}]]))))
+>>>>>>> 160fad80a (review)

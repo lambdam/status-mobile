@@ -11,8 +11,8 @@
     [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [selected-tab account-address]}]
-  (let [tokens (rf/sub [:wallet/token-values account-address])]
+  [{:keys [selected-tab]}]
+  (let [tokens (rf/sub [:wallet/account-token-values])]
     (case selected-tab
       :assets       [rn/flat-list
                      {:render-fn               token-value/view

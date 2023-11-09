@@ -35,6 +35,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 (defn- total-token-value-in-all-chains
   [{:keys [balances-per-chain decimals]}]
   (->> balances-per-chain
@@ -52,6 +53,12 @@
 =======
 (defn total-per-token
 =======
+=======
+(defn calculate-fiat-change
+  [fiat-value change-pct-24hour]
+  (* fiat-value (/ change-pct-24hour (+ 100 change-pct-24hour))))
+
+>>>>>>> aeda1e4a7 (review)
 (defn sum-token-chains
 >>>>>>> 25ec47428 (review)
   [item]
