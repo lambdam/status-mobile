@@ -5,11 +5,6 @@
    :margin-top        12
    :margin-bottom     20})
 
-(def input-container
-  {:flex-direction     :row
-   :padding-horizontal 20
-   :align-items        :flex-end})
-
 (def button-container
   {:position :absolute
    :bottom   22
