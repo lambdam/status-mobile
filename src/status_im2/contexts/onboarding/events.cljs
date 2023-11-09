@@ -6,7 +6,6 @@
     [status-im2.constants :as constants]
     [status-im2.contexts.profile.create.events :as profile.create]
     [status-im2.contexts.profile.recover.events :as profile.recover]
-    [status-im2.navigation.state :as state]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -36,10 +35,12 @@
   {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
                             :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
 
-(rf/defn enable-biometrics-auth
-  {:events [:onboarding-2/enable-biometrics-auth]}
+(rf/defn authenticate-enable-biometrics
+  {:events [:onboarding-2/authenticate-enable-biometrics]}
   [{:keys [db]} password]
-  {:db                     (assoc-in db [:onboarding-2/profile :password] password)
+  {:db                     (-> db
+                               (assoc-in [:onboarding-2/profile :password] password)
+                               (assoc-in [:onboarding-2/profile :syncing?] true))
    :biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
                             :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
 
@@ -47,15 +48,17 @@
   {:events [:onboarding-2/navigate-to-enable-notifications]}
   [{:keys [db]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:dispatch [:navigate-to-within-stack [:enable-notifications :enable-biometrics]]}))
+    {:db       (dissoc db :onboarding-2/profile)
+     :dispatch [:navigate-to-within-stack [:enable-notifications :enable-biometrics]]}))
 
 (rf/defn biometrics-done
   {:events [:onboarding-2/biometrics-done]}
   [{:keys [db]}]
-  {:db       (assoc-in db [:onboarding-2/profile :auth-method] constants/auth-method-biometric)
-   :dispatch (if (= :syncing-results @state/root-id)
-               [:onboarding-2/finalize-setup]
-               [:onboarding-2/create-account-and-login])})
+  (let [syncing? (get-in db [:onboarding-2/profile :syncing?])]
+    {:db       (assoc-in db [:onboarding-2/profile :auth-method] constants/auth-method-biometric)
+     :dispatch (if syncing?
+                 [:onboarding-2/finalize-setup]
+                 [:onboarding-2/create-account-and-login])}))
 
 (rf/defn biometrics-fail
   {:events [:onboarding-2/biometrics-fail]}
@@ -144,16 +147,18 @@
   [{:keys [db]}]
   (let [masked-password    (get-in db [:onboarding-2/profile :password])
         key-uid            (get-in db [:profile/profile :key-uid])
+        syncing?           (get-in db [:onboarding-2/profile :syncing?])
         biometric-enabled? (= (get-in db [:onboarding-2/profile :auth-method])
                               constants/auth-method-biometric)]
-    (js/console.log (str "masked password" masked-password))
     (cond-> {:db (assoc db :onboarding-2/generated-keys? true)}
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
              {:key-uid         key-uid
               :masked-password masked-password
-              :on-success      #(rf/dispatch [:navigate-to-within-stack
-                                              [:enable-notifications :enable-biometrics]])
+              :on-success      (fn []
+                                 (if syncing?
+                                   (rf/dispatch [:onboarding-2/navigate-to-enable-notifications])
+                                   (log/error "successfully saved biometrics")))
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))

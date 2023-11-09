@@ -30,11 +30,12 @@
                             :theme                 theme
                             :blur?                 true
                             :on-enter-password     (fn [entered-password]
-                                                     (rf/dispatch [:onboarding-2/enable-biometrics-auth
-                                                                   (security/safe-unmask-data
-                                                                    entered-password)])
+                                                     (rf/dispatch
+                                                      [:onboarding-2/authenticate-enable-biometrics
+                                                       (security/safe-unmask-data
+                                                        entered-password)])
                                                      (rf/dispatch [:hide-bottom-sheet]))
-                            :auth-button-label     (i18n/label :t/reveal-sync-code)}))
+                            :auth-button-label     (i18n/label :t/password)}))
 
 (defn enable-biometrics-buttons
   [insets theme]
@@ -45,7 +46,9 @@
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:accessibility-label :enable-biometrics-button
-       :on-press            #(authenticate-enable-biometric theme)
+       :on-press            #(rf/dispatch (if (= :syncing-results @state/root-id)
+                                            (authenticate-enable-biometric theme)
+                                            [:onboarding-2/enable-biometrics]))
        :icon-left           :i/face-id
        :customization-color profile-color}
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
