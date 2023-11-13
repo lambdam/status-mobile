@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
@@ -14,13 +13,14 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(def ^:private no-password nil)
+
 (defn- view-internal
   []
   (let [{:keys [address]}  (rf/sub [:get-screen-params])
         number-of-accounts (count (rf/sub [:profile/wallet-accounts]))
         account-name       (reagent/atom (i18n/label :t/default-account-name
                                                      {:number (inc number-of-accounts)}))
-        address-title      (i18n/label :t/watch-address)
         account-color      (reagent/atom (rand-nth colors/account-colors))
         account-emoji      (reagent/atom (emoji-picker.utils/random-emoji))
         on-change-name     #(reset! account-name %)
@@ -44,14 +44,20 @@
          :bottom-action-label :t/create-account
          :bottom-action-props {:customization-color @account-color
                                :disabled?           (string/blank? @account-name)
-                               :on-press            #(re-frame/dispatch [:navigate-to
-                                                                         :wallet-account])}}
+                               :on-press            #(rf/dispatch [:wallet/add-account
+                                                                   no-password
+                                                                   {:type         :watch
+                                                                    :account-name @account-name
+                                                                    :emoji        @account-emoji
+                                                                    :color        @account-color}
+                                                                   {:address    address
+                                                                    :public-key ""}])}}
         [quo/data-item
          {:card?           true
           :right-icon      :i/advanced
           :icon-right?     true
           :emoji           @account-emoji
-          :title           address-title
+          :title           (i18n/label :t/watched-address)
           :subtitle        address
           :status          :default
           :size            :default

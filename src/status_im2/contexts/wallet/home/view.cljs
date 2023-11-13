@@ -43,10 +43,11 @@
   [{:keys [accounts loading? balances profile-color]}]
   (let [accounts-with-balances
         (mapv
-         (fn [{:keys [color address] :as account}]
+         (fn [{:keys [color address type emoji] :as account}]
            (assoc account
                   :customization-color color
-                  :type                :empty
+                  :type                (if (= type :watch) :watch-only :default)
+                  :emoji               emoji
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
                   :loading?            loading?
                   :balance             (utils/prettify-balance

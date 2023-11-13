@@ -1565,7 +1565,7 @@
     "delete-account": "Delete account",
     "delete-keys-keycard": "Delete keys from Keycard",
     "watch-only": "Watch-only",
-    "watch-address": "Watch address",
+    "watched-address": "Watched address",
     "cant-report-bug": "Can't report a bug",
     "mail-should-be-configured": "Mail client should be configured",
     "check-on-block-explorer": "Check on block explorer",

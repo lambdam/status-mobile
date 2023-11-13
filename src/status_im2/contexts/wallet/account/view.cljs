@@ -21,20 +21,23 @@
                  :padding-bottom     8}
      :render-fn quo/settings-item}]])
 
-(def tabs-data
-  [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
-   {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
-   {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}
-   {:id :permissions :label (i18n/label :t/permissions) :accessibility-label :permissions}
-   {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps}
-   {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
+(def first-tab-id :assets)
+
+(defn tabs-data
+  [watch-only?]
+  (cond-> [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
+           {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
+           {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
+    (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
+    true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
 
 (defn view
   []
-  (let [selected-tab (reagent/atom (:id (first tabs-data)))]
+  (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
-      (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
-            networks                           (rf/sub [:wallet/network-details])]
+      (let [{:keys [name color emoji balance type]} (rf/sub [:wallet/current-viewing-account])
+            networks                                (rf/sub [:wallet/network-details])
+            watch-only?                             (= type :watch)]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type              :wallet-networks
@@ -53,20 +56,20 @@
          [quo/account-overview
           {:current-value       (utils/prettify-balance balance)
            :account-name        name
-           :account             :default
+           :account             (if watch-only? :watched-address :default)
            :customization-color color}]
          [quo/wallet-graph {:time-frame :empty}]
-         [quo/wallet-ctas
-          {:send-action   #(rf/dispatch [:open-modal :wallet-select-address])
-           :buy-action    #(rf/dispatch [:show-bottom-sheet
-                                         {:content buy-drawer}])
-           :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}]
+         (when (not watch-only?)
+           [quo/wallet-ctas
+            {:send-action   #(rf/dispatch [:open-modal :wallet-select-address])
+             :buy-action    #(rf/dispatch [:show-bottom-sheet
+                                           {:content buy-drawer}])
+             :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}])
          [quo/tabs
-          {:style            style/tabs
-           :size             32
-           :default-active   @selected-tab
-           :data             tabs-data
-           :on-change        #(reset! selected-tab %)
-           :scrollable?      true
-           :scroll-on-press? true}]
+          {:style          style/tabs
+           :size           32
+           :default-active @selected-tab
+           :data           (tabs-data watch-only?)
+           :on-change      #(reset! selected-tab %)
+           :scrollable?    true}]
          [tabs/view {:selected-tab @selected-tab}]]))))
