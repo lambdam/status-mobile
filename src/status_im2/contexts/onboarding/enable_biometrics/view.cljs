@@ -1,19 +1,19 @@
 (ns status-im2.contexts.onboarding.enable-biometrics.view
   (:require
-    [quo.core :as quo]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im2.common.biometric.events :as biometric]
-    [status-im2.common.parallax.view :as parallax]
-    [status-im2.common.parallax.whitelist :as whitelist]
-    [status-im2.common.resources :as resources]
-    [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
-    [status-im2.contexts.onboarding.enable-biometrics.style :as style]
-    [status-im2.navigation.state :as state]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+   [quo.core :as quo]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im2.common.biometric.events :as biometric]
+   [status-im2.common.parallax.view :as parallax]
+   [status-im2.common.parallax.whitelist :as whitelist]
+   [status-im2.common.resources :as resources]
+   [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+   [status-im2.contexts.onboarding.enable-biometrics.style :as style]
+   [status-im2.navigation.state :as state]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [utils.security.core :as security]))
 
 (defn page-title
   []
@@ -26,8 +26,7 @@
 
 (defn authenticate-enable-biometric
   [theme]
-  (standard-auth/authorize {:auth-button-icon-left :i/reveal
-                            :theme                 theme
+  (standard-auth/authorize {:theme                 theme
                             :blur?                 true
                             :on-enter-password     (fn [entered-password]
                                                      (rf/dispatch

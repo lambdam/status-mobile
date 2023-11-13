@@ -166,7 +166,9 @@
                  :animations             (merge transitions/new-to-status-modal-animations
                                                 transitions/push-animations-for-transparent-background)
                  :popGesture             false
-                 :modalPresentationStyle :overCurrentContext}
+                 :modalPresentationStyle :overCurrentContext
+                 :hardwareBackButton     {:dismissModalOnPress false
+                                          :popStackOnPress     false}}
      :component enable-biometrics/view}
 
     {:name      :generating-keys
