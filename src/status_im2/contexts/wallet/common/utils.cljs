@@ -1,5 +1,6 @@
 (ns status-im2.contexts.wallet.common.utils
   (:require [clojure.string :as string]
+            [quo.foundations.resources :as quo.resources]
             [status-im2.constants :as constants]))
 
 (defn get-first-name
@@ -32,3 +33,17 @@
   [number-of-accounts]
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
+
+(defn network-names
+  [token]
+  (let [balances-per-chain (:balancesPerChain token)]
+    (mapv (fn [chain-id-keyword]
+            (let [chain-id-str (name chain-id-keyword)
+                  chain-id     (js/parseInt chain-id-str)]
+              (case chain-id
+                10    {:source (quo.resources/get-network :optimism)}
+                42161 {:source (quo.resources/get-network :arbitrum)}
+                5     {:source (quo.resources/get-network :ethereum)}
+                1     {:source (quo.resources/get-network :ethereum)}
+                :unknown))) ; Default case if the chain-id is not recognized
+          (keys balances-per-chain))))
