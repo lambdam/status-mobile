@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.common.standard-authentication.standard-auth.core :as standard-auth]
+    [status-im2.common.standard-authentication.core :as standard-auth]
     [status-im2.constants :as constants]
     [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
     [status-im2.contexts.wallet.common.utils :as utils]

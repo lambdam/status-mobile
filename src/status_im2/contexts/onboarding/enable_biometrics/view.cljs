@@ -1,19 +1,20 @@
 (ns status-im2.contexts.onboarding.enable-biometrics.view
   (:require
-   [quo.core :as quo]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im2.common.biometric.events :as biometric]
-   [status-im2.common.parallax.view :as parallax]
-   [status-im2.common.parallax.whitelist :as whitelist]
-   [status-im2.common.resources :as resources]
-   [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
-   [status-im2.contexts.onboarding.enable-biometrics.style :as style]
-   [status-im2.navigation.state :as state]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [utils.security.core :as security]))
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im2.common.biometric.events :as biometric]
+    [status-im2.common.parallax.view :as parallax]
+    [status-im2.common.parallax.whitelist :as whitelist]
+    [status-im2.common.resources :as resources]
+    [status-im2.common.standard-authentication.core :as standard-auth]
+    [status-im2.contexts.onboarding.enable-biometrics.style :as style]
+    [status-im2.navigation.state :as state]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
+
 
 (defn page-title
   []
@@ -24,38 +25,37 @@
     :description                     (i18n/label :t/use-biometrics)
     :description-accessibility-label :enable-biometrics-sub-title}])
 
-(defn authenticate-enable-biometric
-  [theme]
-  (standard-auth/authorize {:theme                 theme
-                            :blur?                 true
-                            :on-enter-password     (fn [entered-password]
-                                                     (rf/dispatch
-                                                      [:onboarding-2/authenticate-enable-biometrics
-                                                       (security/safe-unmask-data
-                                                        entered-password)])
-                                                     (rf/dispatch [:hide-bottom-sheet]))
-                            :auth-button-label     (i18n/label :t/password)}))
-
 (defn enable-biometrics-buttons
   [insets theme]
   (let [supported-biometric-type (rf/sub [:biometric/supported-type])
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
         profile-color            (or (:color (rf/sub [:onboarding-2/profile]))
-                                     (rf/sub [:profile/customization-color]))]
+                                     (rf/sub [:profile/customization-color]))
+        syncing-results?         (= :syncing-results @state/root-id)]
     [rn/view {:style (style/buttons insets)}
-     [quo/button
-      {:accessibility-label :enable-biometrics-button
-       :on-press            #(rf/dispatch (if (= :syncing-results @state/root-id)
-                                            (authenticate-enable-biometric theme)
-                                            [:onboarding-2/enable-biometrics]))
-       :icon-left           :i/face-id
-       :customization-color profile-color}
-      (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
+     [standard-auth/button
+      (merge
+       {:size                40
+        :accessibility-label :enable-biometrics-button
+        :icon-left           :i/face-id
+        :customization-color profile-color
+        :button-label        (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})}
+       (if syncing-results?
+         {:theme             theme
+          :blur?             true
+          :on-enter-password (fn [entered-password]
+                               (rf/dispatch
+                                [:onboarding-2/authenticate-enable-biometrics
+                                 (security/safe-unmask-data
+                                  entered-password)])
+                               (rf/dispatch [:hide-bottom-sheet]))
+          :auth-button-label (i18n/label :t/confirm)}
+         {:on-press #(rf/dispatch [:onboarding-2/enable-biometrics])}))]
      [quo/button
       {:accessibility-label :maybe-later-button
        :background          :blur
        :type                :grey
-       :on-press            #(rf/dispatch (if (= :syncing-results @state/root-id)
+       :on-press            #(rf/dispatch (if syncing-results?
                                             [:navigate-to-within-stack
                                              [:enable-notifications :enable-biometrics]]
                                             [:onboarding-2/create-account-and-login]))

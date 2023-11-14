@@ -1,10 +1,10 @@
 (ns status-im2.common.standard-authentication.standard-auth.slide-button.view
   (:require
-   [quo.core :as quo]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im2.common.standard-authentication.standard-auth.authorize :as authorize]))
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.standard-authentication.standard-auth.authorize :as authorize]))
 
 (defn- view-internal
   [_]
