@@ -34,11 +34,7 @@
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
       (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
-            networks                           (rf/sub [:wallet/network-details])
-            profile1                           (rf/sub [:profile/wallet-accounts])
-            profile2                           (rf/sub [:wallet/accounts])]
-        ;(println "profile1: " profile1)
-        ;(println "profile2: " profile2)
+            networks                           (rf/sub [:wallet/network-details])]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type              :wallet-networks

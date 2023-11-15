@@ -118,7 +118,6 @@
                 (assoc :chat/open-last-chat (get-in db [:profile/profile :key-uid]))
                 notifications-enabled?
                 (assoc :effects/push-notifications-enable nil))
-              (rf/dispatch [:wallet/initialize])
               (transport/start-messenger)
               (contacts/initialize-contacts)
               (browser/initialize-browser)
