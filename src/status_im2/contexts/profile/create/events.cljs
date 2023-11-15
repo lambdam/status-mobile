@@ -2,6 +2,7 @@
   (:require
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
     [status-im2.contexts.profile.config :as profile.config]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -21,4 +22,4 @@
           :password           (native-module/sha3 (security/safe-unmask-data password))
           :imagePath          (profile.config/strip-file-prefix image-path)
           :customizationColor color
-          :emoji              emoji)})
+          :emoji              (emoji-picker.utils/random-emoji))})
