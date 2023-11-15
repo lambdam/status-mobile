@@ -81,6 +81,7 @@
           :tokens                   tokens-0x2}})
 
 (h/deftest-sub :wallet/balances
+  ;; TODO: fix this test and add more test cases
   [sub-name]
   (testing "a map: address->balance"
     (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
