@@ -34,6 +34,7 @@
  :<- [:wallet/balances]
  :<- [:wallet/tokens-loading?]
  (fn [[accounts balances tokens-loading?]]
+   (println "accountsx" accounts)
    (mapv (fn [{:keys [color address] :as account}]
            (assoc account
                   :customization-color color

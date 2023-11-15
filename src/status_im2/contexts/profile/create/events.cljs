@@ -14,10 +14,11 @@
 
 (rf/defn create-profile-and-login
   {:events [:profile.create/create-and-login]}
-  [_ {:keys [display-name password image-path color]}]
+  [_ {:keys [display-name password image-path color emoji]}]
   {::create-profile-and-login
    (assoc (profile.config/create)
           :displayName        display-name
           :password           (native-module/sha3 (security/safe-unmask-data password))
           :imagePath          (profile.config/strip-file-prefix image-path)
-          :customizationColor color)})
+          :customizationColor color
+          :emoji              emoji)})

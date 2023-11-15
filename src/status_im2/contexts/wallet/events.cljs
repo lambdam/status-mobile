@@ -44,6 +44,7 @@
 (rf/reg-event-fx
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
+   (println "aaaa" accounts)
    (let [wallet-db           (get db :wallet)
          new-account?        (:new-account? wallet-db)
          navigate-to-account (:navigate-to-account wallet-db)]
@@ -321,3 +322,9 @@
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [address]]
    {:db (assoc db :wallet/send-address address)}))
+
+(rf/reg-event-fx
+ :wallet/initialize
+ (fn [{:keys [db]}]
+   (println "WALLET INIT")
+   {:db db}))
