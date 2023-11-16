@@ -1,8 +1,9 @@
 (ns status-im2.contexts.onboarding.intro.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [status-im2.constants :as constants]
+   [promesa.core :as p]
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [status-im2.constants :as constants]
     [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.overlay.view :as overlay]
     [status-im2.contexts.onboarding.intro.style :as style]
@@ -45,3 +46,26 @@
        :style    style/highlighted-text}
       (i18n/label :t/terms-of-service)]]]
    [overlay/view]])
+
+(comment
+  (p/chain
+    (do (when-let [blur-show-fn @overlay/blur-show-fn-atom]
+          (blur-show-fn))
+        (rf/dispatch-sync [:open-modal :new-to-status])
+        (p/delay 1000))
+    (fn [_]
+      (rf/dispatch-sync [:onboarding-2/navigate-to-create-profile])))
+  
+
+  (require '[promesa.core :as p])
+
+  (p/chain
+    (do (when-let [blur-show-fn @overlay/blur-show-fn-atom]
+          (blur-show-fn))
+        (rf/dispatch-sync [:open-modal :new-to-status])
+        (p/delay 1000))
+    (fn [_]
+      (rf/dispatch-sync [:onboarding-2/navigate-to-create-profile]))
+    ;; ...
+    ;; Chain more steps
+    ))
